@@ -47,7 +47,10 @@ var detectorElem,
 
 var audioElement = null;
 var track = null
-
+var timeperpoint = 0.0
+var nextpoint = 0.0
+var drawSvg = null
+var userpath = null
 //not a great idea, need to have a dedicated buffer
 
 window.onclick = function() {
@@ -55,17 +58,33 @@ window.onclick = function() {
 	audioContext = new AudioContext();
 	MAX_SIZE = Math.max(4,Math.floor(audioContext.sampleRate/5000));	// corresponds to a 5kHz signal
 
-	var request = new XMLHttpRequest();
-	request.open("GET", "./sounds/misch9.wav", true);
-	request.responseType = "arraybuffer";
-	request.onload = function() {
-	  audioContext.decodeAudioData( request.response, function(buffer) {
-	     theBuffer = buffer;
-	     console.log(theBuffer.duration);
-	     //getDuration(theBuffer)
-	 } );
-	}
-	request.send();
+	// var request = new XMLHttpRequest();
+	// request.open("GET", "./sounds/misch9.wav", true);
+	// request.responseType = "arraybuffer";
+	// request.onload = function() {
+	//   audioContext.decodeAudioData( request.response, function(buffer) {
+	//      theBuffer = buffer;
+	//      console.log(theBuffer.duration);
+	//      //getDuration(theBuffer)
+	//  } );
+	// }
+	// request.send();
+
+  document.getElementById("info").style.visibility = "hidden"
+  document.getElementById("liveinput").style.visibility = "visible"
+
+  var request = new XMLHttpRequest();
+  request.open("GET", "./sounds/whole5.wav", true);
+  request.responseType = "arraybuffer";
+  request.onload = function() {
+    audioContext.decodeAudioData( request.response, function(buffer) {
+       theBuffer = buffer;
+       console.log(theBuffer.duration);
+       soundDuration = theBuffer.duration
+   } );
+  }
+  request.send();
+
 
 	
 	// var request = new XMLHttpRequest();
@@ -156,6 +175,22 @@ function getUserMedia(dictionary, callback) {
     }
 }
 
+function draw(path, circle){
+  var d = 0
+  var coordinates = path
+  var circle = circle
+  return function(){
+
+    if( d == Math.floor(coordinates.getTotalLength())){
+      d = 0
+    }
+    var point = coordinates.getPointAtLength(d)
+    circle.setAttribute('cx', point.x);
+    circle.setAttribute('cy', point.y);
+    d++;    
+  }
+}
+
 function gotStream(stream) {
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
@@ -174,7 +209,28 @@ function gotStream(stream) {
 	track = audioContext.createMediaElementSource(audioElement);
 	track.connect(audioContext.destination);
 
-    updatePitch();
+	//find times
+   path = document.getElementById("birdpath1")
+   pathLength = path.getTotalLength()
+   timeperpoint = soundDuration*1000/pathLength //milliseconds
+   nextpoint = Date.now()
+   drawSvg = draw(path, document.getElementById("bird1"))
+
+	//set birds
+
+	coordinates = document.getElementById("birdpath1")
+	point = coordinates.getPointAtLength(0)
+	console.log(point)
+	document.getElementById("bird1").setAttribute("cx",point.x) 
+	document.getElementById("bird1").setAttribute("cy", point.y)
+	document.getElementById("bird1").visibility="visible"
+
+	const source = audioContext.createBufferSource();
+	source.buffer = theBuffer
+	source.connect(audioContext.destination);
+	source.start();
+
+   	updatePitch();
 }
 
 function togglePlay(){
@@ -227,7 +283,7 @@ function toggleLiveInput() {
         sourceNode = null;
         analyser = null;
         isPlaying = false;
-		if (!window.cancelAnimationFrame)
+        if (!window.cancelAnimationFrame)
 			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
         window.cancelAnimationFrame( rafID );
     }
@@ -420,6 +476,7 @@ function map(val, d1, d2, r1, r2 ){
 }
 
 function updatePitch( time ) {
+
 	var cycles = new Array;
 	analyser.getFloatTimeDomainData( buf );
 	var ac = autoCorrelate( buf, audioContext.sampleRate );
@@ -440,6 +497,7 @@ function updatePitch( time ) {
 			//vague
 		}
 		else{
+
 			x = meter.volume
 			y = frequencyFromNoteNumber(noteFromPitch(ac))
 			fnote = frequencyFromNoteNumber(noteFromPitch(ac))
@@ -460,14 +518,22 @@ function updatePitch( time ) {
 			// console.log("ANGLE " + angle)
 
 			function degreesToRadians(degrees) {
-			    return (degrees * 2 * Math.PI)/360;
+			    return (degrees * Math.PI)/180;
 			}
 			
-			// anglerads = degreesToRadians(angle)
-			// xpos = r*Math.cos(anglerads)
-			// ypos = r*Math.sin(anglerads)
+			anglerads = degreesToRadians(angle)
+			xpos = r*Math.cos(anglerads)
+			ypos = r*Math.sin(anglerads)
 
+			if( userpath ){
+				// userpath.parentNode.remove(userpath)
+				userpath.setAttributeNS(null, "d", "");
+			}
 
+			userpath = document.getElementById("user")
+			userpath.setAttributeNS(null, "d", "M " + Math.floor(pc.width/2) +"," + Math.floor(pc.height/2) + " l " + xpos + "," + ypos + " z ");
+
+			
 			pathCanvas.moveTo(Math.floor(pc.width/2),Math.floor(pc.height/2));
 			pathCanvas.arc(Math.floor(pc.width/2),Math.floor(pc.height/2), r, degreesToRadians((-0.99) * angle), degreesToRadians((-1) * angle),false);
 			//pathCanvas.lineTo(xpos, ypos)
@@ -562,7 +628,16 @@ function updatePitch( time ) {
 		}
 	}
 
+	// setInterval(drawSvg, 10)
+	var now = Date.now()
+
+	if( nextpoint < now){
+		drawSvg()
+		nextpoint = now + timeperpoint
+	}
+
 	if (!window.requestAnimationFrame)
 		window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 	rafID = window.requestAnimationFrame( updatePitch );
+
 }
