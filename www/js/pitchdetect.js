@@ -69,10 +69,8 @@ window.onclick = function() {
 	//  } );
 	// }
 	// request.send();
-
-  document.getElementById("info").style.visibility = "hidden"
-  document.getElementById("liveinput").style.visibility = "visible"
-
+  document.getElementById("info").innerHTML = "Loading files ... "
+  
   var request = new XMLHttpRequest();
   request.open("GET", "./sounds/whole5.mp3", true);
   request.responseType = "arraybuffer";
@@ -80,6 +78,8 @@ window.onclick = function() {
     audioContext.decodeAudioData( request.response, function(buffer) {
        theBuffer = buffer;
        console.log(theBuffer.duration);
+         document.getElementById("info").style.visibility = "hidden"
+		 document.getElementById("liveinput").style.visibility = "visible"
        soundDuration = theBuffer.duration
    } );
   }
