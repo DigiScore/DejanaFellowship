@@ -74,7 +74,7 @@ window.onclick = function() {
   document.getElementById("liveinput").style.visibility = "visible"
 
   var request = new XMLHttpRequest();
-  request.open("GET", "./sounds/whole5.wav", true);
+  request.open("GET", "./sounds/whole5.mp3", true);
   request.responseType = "arraybuffer";
   request.onload = function() {
     audioContext.decodeAudioData( request.response, function(buffer) {
