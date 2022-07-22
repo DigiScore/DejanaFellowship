@@ -255,13 +255,13 @@ function gotStream(stream) {
 
 	for( var i=0;i<birdlist.length;i++){
 		var ret = birdlist[i].inittime()
-		if( ret == null){
-			return 0;
+		if( ret != null){
+			birdlist[i].playSound()
 		}
-		birdlist[i].playSound()
 	}
 
-   	updatePitch();
+	if( ret!=null)
+   		updatePitch();
 }
 
 function togglePlay(){
