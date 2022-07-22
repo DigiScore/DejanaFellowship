@@ -233,9 +233,9 @@ function gotStream(stream) {
     mediaStreamSource.connect( analyser );
 
 	// pass it into the audio context
-	// audioElement = document.querySelector('audio');
-	// track = audioContext.createMediaElementSource(audioElement);
-	// track.connect(audioContext.destination);
+	audioElement = document.querySelector('audio');
+	track = audioContext.createMediaElementSource(audioElement);
+	track.connect(audioContext.destination);
 
 	//find times
  //   var path = document.getElementById("birdpath1")
