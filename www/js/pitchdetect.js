@@ -253,15 +253,21 @@ function gotStream(stream) {
 	// document.getElementById("bird1").setAttribute("cy", point.y)
 	// document.getElementById("bird1").visibility="visible"
 
+	var allLoaded = 1;
 	for( var i=0;i<birdlist.length;i++){
 		var ret = birdlist[i].inittime()
 		if( ret != null){
-			birdlist[i].playSound()
+			allLoaded = null
 		}
 	}
 
-	if( ret!=null)
-   		updatePitch();
+	if( allLoaded!=null){
+		for( var i=0;i<birdlist.length;i++){
+			birdlist[i].playSound()
+		}
+		updatePitch();		
+	}
+
 }
 
 function togglePlay(){
