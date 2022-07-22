@@ -57,6 +57,7 @@ var userpath = null
 var soundDuration = 0.0
 
 var birdlist = []
+var isound = null
 
 //not a great idea, need to have a dedicated buffer
 
@@ -65,17 +66,17 @@ document.getElementById("info").onclick = function() {
 	audioContext = new AudioContext();
 	//MAX_SIZE = Math.max(4,Math.floor(audioContext.sampleRate/5000));	// corresponds to a 5kHz signal
 
-	// var request = new XMLHttpRequest();
-	// request.open("GET", "./sounds/misch9.wav", true);
-	// request.responseType = "arraybuffer";
-	// request.onload = function() {
-	//   audioContext.decodeAudioData( request.response, function(buffer) {
-	//      theBuffer = buffer;
-	//      console.log(theBuffer.duration);
-	//      //getDuration(theBuffer)
-	//  } );
-	// }
-	// request.send();
+	var request = new XMLHttpRequest();
+	request.open("GET", "./sounds/misch9.wav", true);
+	request.responseType = "arraybuffer";
+	request.onload = function() {
+	  audioContext.decodeAudioData( request.response, function(buffer) {
+	     isound = buffer;
+	     console.log(isound.duration);
+	     //getDuration(theBuffer)
+	 } );
+	}
+	request.send();
   
 
   var svg = document.getElementById("svgel")
@@ -234,8 +235,8 @@ function gotStream(stream) {
 
 	// pass it into the audio context
 	audioElement = document.querySelector('audio');
-	track = audioContext.createMediaElementSource(audioElement);
-	track.connect(audioContext.destination);
+	// track = audioContext.createMediaElementSource(audioElement);
+	// track.connect(audioContext.destination);
 
 	//find times
  //   var path = document.getElementById("birdpath1")
@@ -276,15 +277,16 @@ function togglePlay(){
 	if (audioContext.state === 'suspended') {
         audioContext.resume();
     }
+
     console.log("INTERSECTING")
-    console.log(audioElement.duration + " , " + !audioElement.paused)
     if(audioElement.duration > 0 && audioElement.paused){
-    	console.log("PLAYING")
-        audioElement.play();
-    }
-    else{
-    	//do not do anything, it is playing
-    }
+    	// console.log("PLAYING")
+	    // var sourceNode = audioContext.createBufferSource();
+	    // sourceNode.buffer = isound;
+	    // sourceNode.connect(audioContext.destination)
+	    // sourceNode.start(0)
+     	audioElement.play();
+   	}
 
 }
 
