@@ -56,6 +56,8 @@ var drawSvg = null
 var userpath = null
 var soundDuration = 0.0
 
+var birdlist = []
+
 //not a great idea, need to have a dedicated buffer
 
 window.onclick = function() {
@@ -82,10 +84,17 @@ window.onclick = function() {
     svg.removeChild(svg.firstChild);
  }
 
+	userpath = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
+	userpath.setAttributeNS(null,"d","")
+	userpath.setAttributeNS(null, "stroke", "red"); 
+	userpath.setAttributeNS(null, "stroke-width", 1);
+	userpath.setAttributeNS(null, "fill", "None");  
+	userpath.setAttributeNS(null, "id", "user");  
+	svg.appendChild(userpath)
 
   if( audioContext){
 	  document.getElementById("info").innerHTML = "Loading files ... "
-	  createBirds(svg, audioContext)
+	  birdlist = createBirds(svg, audioContext)
   }
 
   
@@ -228,26 +237,26 @@ function gotStream(stream) {
 	track.connect(audioContext.destination);
 
 	//find times
-   var path = document.getElementById("birdpath1")
-   //path.setAttributeNS(null,"d",mpb["mpb3"])
-   var pathLength = path.getTotalLength()
-   timeperpoint = soundDuration*1000/pathLength //milliseconds
-   nextpoint = Date.now()
-   drawSvg = draw(path, document.getElementById("bird1"))
+ //   var path = document.getElementById("birdpath1")
+ //   //path.setAttributeNS(null,"d",mpb["mpb3"])
+ //   var pathLength = path.getTotalLength()
+ //   timeperpoint = soundDuration*1000/pathLength //milliseconds
+ //   nextpoint = Date.now()
+ //   drawSvg = draw(path, document.getElementById("bird1"))
 
-	//set birds
+	// //set birds
 
-	var coordinates = document.getElementById("birdpath1")
-	var point = coordinates.getPointAtLength(0)
-	console.log(point)
-	document.getElementById("bird1").setAttribute("cx",point.x) 
-	document.getElementById("bird1").setAttribute("cy", point.y)
-	document.getElementById("bird1").visibility="visible"
+	// var coordinates = document.getElementById("birdpath1")
+	// var point = coordinates.getPointAtLength(0)
+	// console.log(point)
+	// document.getElementById("bird1").setAttribute("cx",point.x) 
+	// document.getElementById("bird1").setAttribute("cy", point.y)
+	// document.getElementById("bird1").visibility="visible"
 
-	const source = audioContext.createBufferSource();
-	source.buffer = theBuffer
-	source.connect(audioContext.destination);
-	source.start();
+	for( var i=0;i<birdlist.length;i++){
+		birdlist[i].inittime()
+		//birdlist[i].playSound()
+	}
 
    	updatePitch();
 }
@@ -650,10 +659,16 @@ function updatePitch( time ) {
 	// setInterval(drawSvg, 10)
 	var now = Date.now()
 
-	if( nextpoint < now){
-		drawSvg()
-		nextpoint = now + timeperpoint
+	for( var i=0;i<birdlist.length;i++){
+		
+		if( birdlist[i].nextPoint < now){
+			//drawSvg()
+			birdlist[i].moveOnPath()
+			birdlist[i].updateTime(now)
+			//nextpoint = now + timeperpoint
+		}		
 	}
+
 
 	if (!window.requestAnimationFrame)
 		window.requestAnimationFrame = window.webkitRequestAnimationFrame;

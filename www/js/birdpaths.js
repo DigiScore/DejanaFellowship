@@ -30,17 +30,17 @@ var mpb = [
 ]
 
 var tracks = [
-	"./sounds/misch9.wav",
-	"./sounds/misch9.wav",
-	"./sounds/triggerSound.mp3",
-	"./sounds/misch9.wav",
-	"./sounds/whole5.wav",
-	"./sounds/misch9.wav",
-	"./sounds/misch9.wav",
-	"./sounds/whole5.wav",
-	"./sounds/triggerSound.mp3",
-	"./sounds/misch9.wav",	
-	"./sounds/whole5.wav",
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
+	"./sounds/whole5.mp3",	
 	]
 
 class Bird {
@@ -54,6 +54,8 @@ class Bird {
     this.soundDuration = 0.0
     this.loaded = 0
     this.audioctx = ctx
+    this.pathPointer = 0
+    this.track = null
 
     this.path = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
     this.path.setAttributeNS(null,"d",path)
@@ -84,30 +86,59 @@ class Bird {
   	return this.path.parentNode.remove(this.path)
   }
 
-  addSound(ind){
+  addSound(track){
 		
 	  var audioCtx = this.audioctx
 	  var request = new XMLHttpRequest();
-	  request.open("GET", tracks[ind], true);
+	  this.request = request
+	  var that = this
+	    
+	  request.open("GET", track, true);
 	  request.responseType = "arraybuffer";
 	  request.onload = function() {
 	    audioCtx.decodeAudioData( request.response, function(buffer) {
-	       this.buffer = buffer;
-	       this.soundDuration = this.buffer.duration
-	       console.log("Loaded " + tracks[ind])
-	       this.loaded = 1
-	   } );
+	       that.buffer = buffer;
+	       that.soundDuration = buffer.duration
+	       console.log("Loaded " + track)
+	       that.loaded = 1
+	   })
 	  }
 	  request.send();
 
   }
 
+  moveOnPath(){
+  	this.pathPointer = ( this.pathPointer + 1 )
+  	if( this.pathPointer < this.path.getTotalLength()){
+		var start = this.path.getPointAtLength(this.pathPointer)
+		this.circle.setAttribute("cx",start.x)
+		this.circle.setAttribute("cy",start.y)
+		this.circle.setAttribute("r",10)
+  	}
+
+  }
+
   inittime(){
+  	console.log(this.request.status)
+  	console.log(this.buffer)
   	this.nextPoint = Date.now()
+   	var pathLength = this.path.getTotalLength()
+   	this.timeperpoint = this.soundDuration*1000/pathLength //milliseconds
+   	
   }
 
   updateTime(now){
   	this.nextPoint = now + this.timeperpoint
+  }
+
+  playSound(){
+  	console.log(this)
+	const source = this.audioctx.createBufferSource();
+	source.buffer = this.buffer
+
+	source.connect(this.audioctx.destination);
+	source.start();
+
   }
 
 }
@@ -117,10 +148,11 @@ export function createBirds(svg, audioContext){
 	var birdlist = []
 
 	while(birdlist.length < 5){
+
 		console.log("Created path " + birdlist.length)
 		var trackind = Math.floor(Math.random()*mpb.length)
 		var newBird = new Bird(mpb[trackind], svg, audioContext)
-		newBird.addSound(trackind)
+		newBird.addSound(tracks[trackind])
 		birdlist.push(newBird)
 	}
 
@@ -133,7 +165,18 @@ export function createBirds(svg, audioContext){
 	// 	console.log("Waiting")
 	// }
 
-	document.getElementById("info").style.visibility = "hidden"
-	document.getElementById("liveinput").style.visibility = "visible"
+	var complete = 1
+	for(var i=0;i<birdlist.length;i++){
+		if( birdlist[i].request.status != 200){
+			complete = 0
+		}
+	}
+
+	if( complete == 0){
+		document.getElementById("info").style.visibility = "hidden"
+		document.getElementById("liveinput").style.visibility = "visible"
+	}
+
+	return birdlist;
 
 }
