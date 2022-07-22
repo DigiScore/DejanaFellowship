@@ -74,6 +74,7 @@ window.onclick = function() {
 	//  } );
 	// }
 	// request.send();
+  
 
   var svg = document.getElementById("svgel")
 
@@ -81,22 +82,26 @@ window.onclick = function() {
     svg.removeChild(svg.firstChild);
  }
 
-  createBirds()
-  document.getElementById("info").innerHTML = "Loading files ... "
-  
-  var request = new XMLHttpRequest();
-  request.open("GET", "./sounds/whole5.mp3", true);
-  request.responseType = "arraybuffer";
-  request.onload = function() {
-    audioContext.decodeAudioData( request.response, function(buffer) {
-       theBuffer = buffer;
-       console.log(theBuffer.duration);
-         document.getElementById("info").style.visibility = "hidden"
-		 document.getElementById("liveinput").style.visibility = "visible"
-       soundDuration = theBuffer.duration
-   } );
+
+  if( audioContext){
+	  document.getElementById("info").innerHTML = "Loading files ... "
+	  createBirds(svg, audioContext)
   }
-  request.send();
+
+  
+  // var request = new XMLHttpRequest();
+  // request.open("GET", "./sounds/whole5.mp3", true);
+  // request.responseType = "arraybuffer";
+  // request.onload = function() {
+  //   audioContext.decodeAudioData( request.response, function(buffer) {
+  //      theBuffer = buffer;
+  //      console.log(theBuffer.duration);
+  //        document.getElementById("info").style.visibility = "hidden"
+		//  document.getElementById("liveinput").style.visibility = "visible"
+  //      soundDuration = theBuffer.duration
+  //  } );
+  // }
+  // request.send();
 
 
 	

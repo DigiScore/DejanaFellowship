@@ -29,11 +29,31 @@ var mpb = [
 
 ]
 
+var tracks = [
+	"./sounds/misch9.wav",
+	"./sounds/misch9.wav",
+	"./sounds/triggerSound.mp3",
+	"./sounds/misch9.wav",
+	"./sounds/whole5.wav",
+	"./sounds/misch9.wav",
+	"./sounds/misch9.wav",
+	"./sounds/whole5.wav",
+	"./sounds/triggerSound.mp3",
+	"./sounds/misch9.wav",	
+	"./sounds/whole5.wav",
+	]
+
 class Bird {
   
-  constructor(path,svg) {
+  constructor(path,svg,ctx) {
     this.d = path;
     this.svg = svg
+    this.timeperpoint = 0
+    this.nextPoint = 0
+    this.buffer = []
+    this.soundDuration = 0.0
+    this.loaded = 0
+    this.audioctx = ctx
 
     this.path = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
     this.path.setAttributeNS(null,"d",path)
@@ -64,16 +84,56 @@ class Bird {
   	return this.path.parentNode.remove(this.path)
   }
 
+  addSound(ind){
+		
+	  var audioCtx = this.audioctx
+	  var request = new XMLHttpRequest();
+	  request.open("GET", tracks[ind], true);
+	  request.responseType = "arraybuffer";
+	  request.onload = function() {
+	    audioCtx.decodeAudioData( request.response, function(buffer) {
+	       this.buffer = buffer;
+	       this.soundDuration = this.buffer.duration
+	       console.log("Loaded " + tracks[ind])
+	       this.loaded = 1
+	   } );
+	  }
+	  request.send();
+
+  }
+
+  inittime(){
+  	this.nextPoint = Date.now()
+  }
+
+  updateTime(now){
+  	this.nextPoint = now + this.timeperpoint
+  }
+
 }
 
-export function createBirds(){
+export function createBirds(svg, audioContext){
 
 	var birdlist = []
-	var svg = document.getElementById("svgel")
 
 	while(birdlist.length < 5){
 		console.log("Created path " + birdlist.length)
-		birdlist.push(new Bird(mpb[Math.floor(Math.random()*mpb.length)], svg))
+		var trackind = Math.floor(Math.random()*mpb.length)
+		var newBird = new Bird(mpb[trackind], svg, audioContext)
+		newBird.addSound(trackind)
+		birdlist.push(newBird)
 	}
+
+	function sumLoaded( birdlist){
+		return birdlist.map(function(b){return b.loaded}).reduce(function(a,b){return a+b});
+	}
+
+	// while( sumLoaded(birdlist) < birdlist.length){
+	// 	//Wiating for sounds to load
+	// 	console.log("Waiting")
+	// }
+
+	document.getElementById("info").style.visibility = "hidden"
+	document.getElementById("liveinput").style.visibility = "visible"
 
 }
