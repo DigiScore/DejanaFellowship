@@ -60,7 +60,7 @@ var birdlist = []
 
 //not a great idea, need to have a dedicated buffer
 
-window.onclick = function() {
+document.getElementById("info").onclick = function() {
 
 	audioContext = new AudioContext();
 	//MAX_SIZE = Math.max(4,Math.floor(audioContext.sampleRate/5000));	// corresponds to a 5kHz signal
@@ -255,7 +255,7 @@ function gotStream(stream) {
 
 	for( var i=0;i<birdlist.length;i++){
 		birdlist[i].inittime()
-		//birdlist[i].playSound()
+		birdlist[i].playSound()
 	}
 
    	updatePitch();
