@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import {createBirds} from "./birdpaths.js"
+
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioContext = null;
@@ -43,7 +45,8 @@ var detectorElem,
 	pathCanvas,
 	prev_pitch=-1,
 	prev_x = 0,
-	prev_y = 0;
+	prev_y = 0,
+	pc= null;
 
 var audioElement = null;
 var track = null
@@ -51,12 +54,14 @@ var timeperpoint = 0.0
 var nextpoint = 0.0
 var drawSvg = null
 var userpath = null
+var soundDuration = 0.0
+
 //not a great idea, need to have a dedicated buffer
 
 window.onclick = function() {
 
 	audioContext = new AudioContext();
-	MAX_SIZE = Math.max(4,Math.floor(audioContext.sampleRate/5000));	// corresponds to a 5kHz signal
+	//MAX_SIZE = Math.max(4,Math.floor(audioContext.sampleRate/5000));	// corresponds to a 5kHz signal
 
 	// var request = new XMLHttpRequest();
 	// request.open("GET", "./sounds/misch9.wav", true);
@@ -69,6 +74,14 @@ window.onclick = function() {
 	//  } );
 	// }
 	// request.send();
+
+  var svg = document.getElementById("svgel")
+
+  while (svg.firstChild) {
+    svg.removeChild(svg.firstChild);
+ }
+
+  createBirds()
   document.getElementById("info").innerHTML = "Loading files ... "
   
   var request = new XMLHttpRequest();
@@ -210,16 +223,17 @@ function gotStream(stream) {
 	track.connect(audioContext.destination);
 
 	//find times
-   path = document.getElementById("birdpath1")
-   pathLength = path.getTotalLength()
+   var path = document.getElementById("birdpath1")
+   //path.setAttributeNS(null,"d",mpb["mpb3"])
+   var pathLength = path.getTotalLength()
    timeperpoint = soundDuration*1000/pathLength //milliseconds
    nextpoint = Date.now()
    drawSvg = draw(path, document.getElementById("bird1"))
 
 	//set birds
 
-	coordinates = document.getElementById("birdpath1")
-	point = coordinates.getPointAtLength(0)
+	var coordinates = document.getElementById("birdpath1")
+	var point = coordinates.getPointAtLength(0)
 	console.log(point)
 	document.getElementById("bird1").setAttribute("cx",point.x) 
 	document.getElementById("bird1").setAttribute("cy", point.y)
@@ -464,8 +478,8 @@ function autoCorrelate( buf, sampleRate ) {
 	var T0 = maxpos;
 
 	var x1=c[T0-1], x2=c[T0], x3=c[T0+1];
-	a = (x1 + x3 - 2*x2)/2;
-	b = (x3 - x1)/2;
+	var a = (x1 + x3 - 2*x2)/2;
+	var b = (x3 - x1)/2;
 	if (a) T0 = T0 - b/(2*a);
 
 	return sampleRate/T0;
@@ -498,11 +512,11 @@ function updatePitch( time ) {
 		}
 		else{
 
-			x = meter.volume
-			y = frequencyFromNoteNumber(noteFromPitch(ac))
-			fnote = frequencyFromNoteNumber(noteFromPitch(ac))
+			var x = meter.volume
+			var y = frequencyFromNoteNumber(noteFromPitch(ac))
+			var fnote = frequencyFromNoteNumber(noteFromPitch(ac))
 
-			centsoff = centsOffFromPitch( ac, noteFromPitch(ac))
+			var centsoff = centsOffFromPitch( ac, noteFromPitch(ac))
 
 			//moving to raidus and angle
 			// x = x < 0? pc.width/2: map(x, 0, 0.6 , 40, 1000)
@@ -510,8 +524,8 @@ function updatePitch( time ) {
 
 			pathCanvas.beginPath();
 			pathCanvas.strokeStyle = "red";
-			r = x < 0? 0: map(x, 0, 0.8 , 0, 1000)
-			angle = (y < 55 || y > 2000)? 0 : map(y, 55, 2000, 0, 360)
+			var r = x < 0? 0: map(x, 0, 0.8 , 0, 1000)
+			var angle = (y < 55 || y > 2000)? 0 : map(y, 55, 2000, 0, 360)
 			
 			// Or, have an angle for each note
 			// angle = ((fnote-69)%12)*30
@@ -521,9 +535,9 @@ function updatePitch( time ) {
 			    return (degrees * Math.PI)/180;
 			}
 			
-			anglerads = degreesToRadians(angle)
-			xpos = r*Math.cos(anglerads)
-			ypos = r*Math.sin(anglerads)
+			var anglerads = degreesToRadians(angle)
+			var xpos = r*Math.cos(anglerads)
+			var ypos = r*Math.sin(anglerads)
 
 			if( userpath ){
 				// userpath.parentNode.remove(userpath)
@@ -611,7 +625,7 @@ function updatePitch( time ) {
 		detuneAmount.innerText = "--";
  	} else {
 	 	detectorElem.className = "confident";
-	 	pitch = ac;
+	 	var pitch = ac;
 	 	pitchElem.innerText = Math.round( pitch ) ;
 	 	var note =  noteFromPitch( pitch );
 		noteElem.innerHTML = noteStrings[note%12];
@@ -641,3 +655,5 @@ function updatePitch( time ) {
 	rafID = window.requestAnimationFrame( updatePitch );
 
 }
+
+document.getElementById("liveinput").addEventListener("click",toggleLiveInput)
