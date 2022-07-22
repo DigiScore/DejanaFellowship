@@ -31,13 +31,13 @@ var mpb = [
 
 var tracks = [
 	"./sounds/whole5.mp3",	
+	"./sounds/misch9.wav",	
 	"./sounds/whole5.mp3",	
+	"./sounds/misch9.wav",	
 	"./sounds/whole5.mp3",	
+	"./sounds/misch9.wav",	
 	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
+	"./sounds/misch9.wav",	
 	"./sounds/whole5.mp3",	
 	"./sounds/whole5.mp3",	
 	"./sounds/whole5.mp3",	
