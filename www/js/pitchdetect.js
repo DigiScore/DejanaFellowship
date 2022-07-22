@@ -254,7 +254,10 @@ function gotStream(stream) {
 	// document.getElementById("bird1").visibility="visible"
 
 	for( var i=0;i<birdlist.length;i++){
-		birdlist[i].inittime()
+		var ret = birdlist[i].inittime()
+		if( ret == null){
+			return 0;
+		}
 		birdlist[i].playSound()
 	}
 

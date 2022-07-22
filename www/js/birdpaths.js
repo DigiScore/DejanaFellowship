@@ -119,11 +119,17 @@ class Bird {
   }
 
   inittime(){
-  	console.log(this.request.status)
-  	console.log(this.buffer)
+
+  	if( this.request.status != 200){
+		alert("Sorry, the sounds are taking time to load. Please wait for few seconds to let them load and try again.")
+		return null
+	}
+
   	this.nextPoint = Date.now()
    	var pathLength = this.path.getTotalLength()
    	this.timeperpoint = this.soundDuration*1000/pathLength //milliseconds
+
+   	return 1
    	
   }
 
@@ -165,17 +171,10 @@ export function createBirds(svg, audioContext){
 	// 	console.log("Waiting")
 	// }
 
-	var complete = 1
-	for(var i=0;i<birdlist.length;i++){
-		if( birdlist[i].request.status != 200){
-			complete = 0
-		}
-	}
+	document.getElementById("info").style.visibility = "hidden"
+	document.getElementById("liveinput").style.visibility = "visible"
 
-	if( complete == 0){
-		document.getElementById("info").style.visibility = "hidden"
-		document.getElementById("liveinput").style.visibility = "visible"
-	}
+
 
 	return birdlist;
 
