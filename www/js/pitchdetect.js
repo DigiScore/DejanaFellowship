@@ -257,7 +257,7 @@ function gotStream(stream) {
 	var allLoaded = 1;
 	for( var i=0;i<birdlist.length;i++){
 		var ret = birdlist[i].inittime()
-		if( ret != null){
+		if( ret == null){
 			allLoaded = null
 		}
 	}
