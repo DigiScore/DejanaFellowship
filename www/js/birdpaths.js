@@ -29,6 +29,15 @@ var mpb = [
 
 ]
 
+var mph = [
+
+	"M837.535,277.454c-12.582,6.12-50.476,9.526-92.151,8.054c-27.044-0.956-55.682-3.967-80.027-9.624c-59.489-13.822-95.384-56.279-114.643-80.572 M725.49,386.279c0-6.579,1.197-43.109,8.651-57.028c10.842-20.243,26.73-41.206,11.242-43.744 M554.607,240.58c4.613,9.685,51.341,57.168,80.536,68.293c15.221,5.799,16.042,2.73,24.229-4.885c2.5-2.325,34.677-13.721,36.413-22.614",
+	"M481.928,141.422c32.446,51.274,1.559,41.491,12.818,72.271c7.509,20.527,57.151,10.745,61.045,62.542c0.896,11.938,32.14,0,11.363,35.655c-8.826,15.145-25.958,21.545-11.309,49.396c24.362,46.31,12.146,101.441,3.954,121.262 M550.714,311.891c-24.659-15.603-41.309,53.461,5.132,49.396 M559.679,369.321c-8.965,36.839-50.274,4.924-70.668,14.864c-21.83,10.641-14.236,75.003-14.236,108.304",
+	"M448.185,455.837c-10.722-40.865-52.528-123.172-27.254-132.342c8.652-3.14,51.214,0.78,63.595-6.279c30.282-17.265,32.792-68.55,14.682-71.677 M426.554,292.626c-3.109,0-5.624,13.807-5.624,30.868",
+	"M580.564,311.983c16.006,41.335,106.701,65.646,119.938,60.75c32.014-11.84,80.362,74.236,103.289,101.442 M574.271,332.389c0,25.737,57.775,41.52,127.729,41.52 M700.503,372.733c0,53.209,35.802,83.104,38.159,101.442 M571.636,319.551c-41.142,45.827,8.929,103.904,80.031,51.163 M598.301,390.689c0,47.704,57.854,86.306,129.352,86.306"	
+
+]
+
 var tracks = [
 	"./sounds/whole5.mp3",	
 	"./sounds/misch9.wav",	
@@ -45,7 +54,7 @@ var tracks = [
 
 class Bird {
   
-  constructor(path,svg,ctx) {
+  constructor(path,svg,ctx, gridlist, ind) {
     this.d = path;
     this.svg = svg
     this.timeperpoint = 0
@@ -56,12 +65,15 @@ class Bird {
     this.audioctx = ctx
     this.pathPointer = 0
     this.track = null
+    this.gridlist = gridlist
+    this.id = "p"+ind
 
     this.path = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
     this.path.setAttributeNS(null,"d",path)
     this.path.setAttributeNS(null, "stroke", "#000000"); 
 	this.path.setAttributeNS(null, "stroke-width", 1);
-	this.path.setAttributeNS(null, "fill", "None");  
+	this.path.setAttributeNS(null, "fill", "None");
+	this.path.setAttributeNS(null, "id", this.id);  
 
 	this.circle = document.createElementNS('http://www.w3.org/2000/svg',"circle"); 
 	var start = this.path.getPointAtLength(0)
@@ -73,6 +85,31 @@ class Bird {
 	this.svg.appendChild(this.circle)
 
   }	
+
+  addTextPath(){
+		
+		let textElem = document.createElementNS('http://www.w3.org/2000/svg', "text");
+
+		// Create a <textPath> element
+		let textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");
+		textPath.setAttribute("href", "#"+this.id);
+		//Center text
+		textPath.setAttribute("dominant-baseline", "Middle");
+		textPath.setAttribute("startOffset", 50);
+		textPath.setAttribute("text-anchor", "middle");
+
+		// Give it a class that will determine the text size, colour, etc
+		// textPath.classList.add("label-text");
+		// Set the text
+		textPath.textContent = "meditternenanseameditternenanseameditternenanseameditternenansea";
+
+		// Add the elements directly after the label background path
+		// bgPath.after(pathElem);
+		// pathElem.after(textElem);
+		textElem.appendChild(textPath);
+		this.svg.appendChild(textElem)
+
+  }
 
   pointsAtD(d){
   	return d < this.path.getTotalLength()? this.path.getPointAtLength(d): null;
@@ -114,8 +151,16 @@ class Bird {
 		this.circle.setAttribute("cx",start.x)
 		this.circle.setAttribute("cy",start.y)
 		this.circle.setAttribute("r",10)
+	  	this.checkIntersection(start.x, start.y)
   	}
 
+  }
+
+  checkIntersection(x,y){
+
+  	for(var i=0; i < this.gridlist.length; i++){
+  		this.gridlist[i].intersects(x,y)
+  	}
   }
 
   inittime(){
@@ -149,7 +194,7 @@ class Bird {
 
 }
 
-export function createBirds(svg, audioContext){
+export function createBirds(svg, audioContext, gridlist){
 
 	var birdlist = []
 
@@ -157,7 +202,7 @@ export function createBirds(svg, audioContext){
 
 		console.log("Created path " + birdlist.length)
 		var trackind = Math.floor(Math.random()*mpb.length)
-		var newBird = new Bird(mpb[trackind], svg, audioContext)
+		var newBird = new Bird(mpb[trackind], svg, audioContext, gridlist, trackind)
 		newBird.addSound(tracks[trackind])
 		birdlist.push(newBird)
 	}
@@ -177,5 +222,25 @@ export function createBirds(svg, audioContext){
 
 
 	return birdlist;
+
+}
+
+
+export function humanpaths(svg, audioContext){
+
+	var humanlist = []
+
+	var ctr = 0
+	while(ctr < mph.length){
+
+		console.log("Created path " + humanlist.length)
+		var trackind = ctr
+		var newBird = new Bird(mph[trackind], svg, audioContext, [], trackind)
+		newBird.addTextPath()
+		humanlist.push(newBird)
+		ctr++
+	}
+
+	return humanlist;
 
 }

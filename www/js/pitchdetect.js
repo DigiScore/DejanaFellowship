@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {createBirds} from "./birdpaths.js"
+import {createBirds,humanpaths} from "./birdpaths.js"
+import {createRect} from "./interactiongrid.js"
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -34,6 +35,7 @@ var theBuffer = null;
 var DEBUGCANVAS = null;
 var meter = 0
 
+var humanlist = []
 var mediaStreamSource = null;
 var detectorElem, 
 	canvasElem,
@@ -48,6 +50,7 @@ var detectorElem,
 	prev_y = 0,
 	pc= null;
 
+var gridlist = []
 var audioElement = null;
 var track = null
 var timeperpoint = 0.0
@@ -85,17 +88,22 @@ document.getElementById("info").onclick = function() {
     svg.removeChild(svg.firstChild);
  }
 
-	userpath = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
-	userpath.setAttributeNS(null,"d","")
-	userpath.setAttributeNS(null, "stroke", "red"); 
-	userpath.setAttributeNS(null, "stroke-width", 1);
-	userpath.setAttributeNS(null, "fill", "None");  
-	userpath.setAttributeNS(null, "id", "user");  
-	svg.appendChild(userpath)
 
   if( audioContext){
-	  document.getElementById("info").innerHTML = "Loading files ... "
-	  birdlist = createBirds(svg, audioContext)
+
+		document.getElementById("info").innerHTML = "Loading files ... "
+		humanlist = humanpaths(svg,audioContext)
+		gridlist = createRect(svg)
+		birdlist = createBirds(svg, audioContext, gridlist)
+
+		userpath = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
+		userpath.setAttributeNS(null,"d","")
+		userpath.setAttributeNS(null, "stroke", "red"); 
+		userpath.setAttributeNS(null, "stroke-width", 1);
+		userpath.setAttributeNS(null, "fill", "None");  
+		userpath.setAttributeNS(null, "id", "user");  
+		svg.appendChild(userpath)
+
   }
 
   
@@ -577,6 +585,10 @@ function updatePitch( time ) {
 			pathCanvas.moveTo(Math.floor(pc.width/2),Math.floor(pc.height/2));
 			pathCanvas.arc(Math.floor(pc.width/2),Math.floor(pc.height/2), r, degreesToRadians((-0.99) * angle), degreesToRadians((-1) * angle),false);
 			//pathCanvas.lineTo(xpos, ypos)
+
+		  	for(var i=0; i < gridlist.length; i++){
+	  			gridlist[i].intersects(xpos,ypos)
+		  	}
 
 			pathCanvas.closePath();
 
