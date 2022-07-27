@@ -17,6 +17,22 @@
 			#sharp { display: none; }
 			.flat #flat { display: inline; }
 			.sharp #sharp { display: inline; }
+
+			.pathclass {
+				animation: 30s opacity;
+			}
+
+		    @keyframes opacity {
+		      15% {opacity: 0} 
+		      35% {opacity: 1}
+		      65% {opacity: 1} 
+		      85% {opacity: 0}
+		    }
+		    #hg2 {animation-delay: 0.5s}
+		    #hg3 {animation-delay: 1.0s}
+		    #hg4 {animation-delay: 1.5s}
+		    #hg5 {animation-delay: 2.0s}
+
 		</style>
 
 	    <script type="module" src="js/pitchdetect.js"></script>

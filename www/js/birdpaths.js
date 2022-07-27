@@ -263,11 +263,12 @@ export function humanpaths(svg, audioContext){
 
 	document.getElementById("humanpaths").style.visibility = "visible"
 	var gtags = document.getElementsByTagName('g');
-	var len = gtags.length-1
-	var randnarray = []
+	
+	var len = gtags.length-3
+	var randnarray = [0,1]
 
 	while( randnarray.length < 5){
-		let newn = Math.floor(Math.random()*len)
+		let newn = 2 + Math.floor(Math.random()*len)
 		if( randnarray.indexOf(newn) == -1 ){
 			randnarray.push(newn)
 			console.log(newn)
