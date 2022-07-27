@@ -18,20 +18,27 @@
 			.flat #flat { display: inline; }
 			.sharp #sharp { display: inline; }
 
-			.pathclass {
-				animation: 30s opacity;
+			.fade {
+				animation: opac 30s forwards;
 			}
 
-		    @keyframes opacity {
-		      15% {opacity: 0} 
-		      35% {opacity: 1}
-		      65% {opacity: 1} 
-		      85% {opacity: 0}
+		    @keyframes opac {
+			  0% { opacity: 1; animation-delay: 7s}
+			  30% { opacity: 0.7; animation-delay: 14s}
+			  60% { opacity: 0.3; animation-delay: 21s}
+			  100% { opacity: 0; animation-delay: 28s;}
 		    }
-		    #hg2 {animation-delay: 0.5s}
-		    #hg3 {animation-delay: 1.0s}
-		    #hg4 {animation-delay: 1.5s}
-		    #hg5 {animation-delay: 2.0s}
+
+			.fadeout {
+				animation: fout 4s forwards;
+			}
+
+		    @keyframes fout {
+			  0% { opacity: 0.6; animation-delay: 0s}
+			  30% { opacity: 0.4; animation-delay: 1s}
+			  55% { opacity: 0.2; animation-delay: 2s}
+			  100% { opacity: 0; animation-delay: 3s;}
+		    }		    
 
 		</style>
 

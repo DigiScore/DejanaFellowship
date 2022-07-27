@@ -274,10 +274,11 @@ function gotStream(stream) {
 	}
 
 	if( allLoaded!=null){
-		for( var i=0;i<birdlist.length;i++){
-			birdlist[i].playSound()
-		}
 		updatePitch();		
+
+		for( var i=0;i<birdlist.length;i++){
+			birdlist[i].playSound(birdlist, rafID)
+		}
 	}
 
 }
@@ -701,10 +702,41 @@ function updatePitch( time ) {
 		}		
 	}
 
+	if( birdlist[0].end == 1 ){
 
-	if (!window.requestAnimationFrame)
-		window.requestAnimationFrame = window.webkitRequestAnimationFrame;
-	rafID = window.requestAnimationFrame( updatePitch );
+		if (!window.cancelAnimationFrame){
+			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
+		}
+        window.cancelAnimationFrame( rafID );
+        rafID = null
+		endpiece()
+
+	}
+	else{
+		if (!window.requestAnimationFrame)
+			window.requestAnimationFrame = window.webkitRequestAnimationFrame;
+		rafID = window.requestAnimationFrame( updatePitch );
+	}
+
+}
+
+function endpiece(){
+
+		let userpath = document.getElementById("userpath")
+		if( userpath ){
+			userpath.parentNode.remove(userpath)
+		}
+
+		for(let g=0; g<gridlist.length; g++){
+			//that.gridlist[g].setAttribute("fill-opacity",1)
+			gridlist[g].setAttribute("fill-opacity", 1) //fade
+			gridlist[g].setAttribute("class", "fade") //fade
+		}
+
+		for(var b=0; b<birdlist.length; b++){
+			birdlist[b].circle.setAttribute("class","fadeout")
+			//birdlist[b].circle.setAttribute("fill-opacity","0")
+		}
 
 }
 
@@ -715,6 +747,7 @@ document.getElementById("pause").addEventListener("click",function(e){
 	if( rafID != null || this.innerText == "Pause"){
 		if (!window.cancelAnimationFrame)
 			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
+
         window.cancelAnimationFrame( rafID );
         this.innerText = "Play"
 

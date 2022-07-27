@@ -68,12 +68,14 @@ class Bird {
     this.track = null
     this.gridlist = gridlist
     this.id = "p"+ind
+    this.end = null
 
     this.path = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
     this.path.setAttributeNS(null,"d",path)
-    this.path.setAttributeNS(null, "stroke", "#000000"); 
+    this.path.setAttributeNS(null, "stroke", "#ffffff"); 
 	this.path.setAttributeNS(null, "stroke-width", 1);
 	this.path.setAttributeNS(null, "fill", "None");
+	this.path.setAttributeNS(null, "fill-opacity", 0);
 	this.path.setAttributeNS(null, "id", this.id);  
 
 	this.circle = document.createElementNS('http://www.w3.org/2000/svg',"circle"); 
@@ -189,16 +191,29 @@ class Bird {
   	this.nextPoint = now + this.timeperpoint
   }
 
-  playSound(){
+  playSound(birdlist, rafID){
 
   	this.source = this.audioctx.createBufferSource();
+  	console.log(this.loop)
 	this.source.loop = this.loop
 	this.source.buffer = this.buffer
 	this.source.connect(this.audioctx.destination);
+
+	let that  = this
+
+	this.source.onended = function(event){
+
+		console.log("ENDED")
+
+		that.end = 1;
+
+		for(var b=1; b<birdlist.length; b++){
+			birdlist[b].source.stop()
+		}
+	}
+	
 	this.source.start();
-
   }
-
 
 }
 
@@ -208,7 +223,6 @@ export function createBirds(svg, audioContext, gridlist){
 
 	var firstbird = new Bird(compulsorypath, svg, audioContext, gridlist, -1); //-1 as in its is the backing track
 	firstbird.addSound(compulsorytrack, false)
-	
 	birdlist.push(firstbird)
 
 	while(birdlist.length < 5){
@@ -229,16 +243,12 @@ export function createBirds(svg, audioContext, gridlist){
 	// 	console.log("Waiting")
 	// }
 
+	//birdlist[0].addEnd(birdlist, null)
+
 	document.getElementById("info").style.visibility = "hidden"
 	document.getElementById("liveinput").style.visibility = "visible"
 	document.getElementById("pause").innerText = "Pause"
 	document.getElementById("pause").style.visibility = "visible"
-
-	birdlist[0].source.onended = function(event){
-		for(var b=1; b<birdlist.length; b++){
-			birdlist[b].source.stop()
-		}
-	}
 
 	return birdlist;
 
