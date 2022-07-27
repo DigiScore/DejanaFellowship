@@ -218,7 +218,7 @@ export function createBirds(svg, audioContext, gridlist){
 
 	document.getElementById("info").style.visibility = "hidden"
 	document.getElementById("liveinput").style.visibility = "visible"
-
+	document.getElementById("pause").style.visibility = "visible"
 
 
 	return birdlist;
@@ -226,19 +226,42 @@ export function createBirds(svg, audioContext, gridlist){
 }
 
 
+//selects 5 out of 11 human paths and makes them visible
 export function humanpaths(svg, audioContext){
 
 	var humanlist = []
 
-	var ctr = 0
-	while(ctr < mph.length){
+	// var ctr = 0
+	// while(ctr < mph.length){
 
-		console.log("Created path " + humanlist.length)
-		var trackind = ctr
-		var newBird = new Bird(mph[trackind], svg, audioContext, [], trackind)
-		newBird.addTextPath()
-		humanlist.push(newBird)
-		ctr++
+	// 	console.log("Created path " + humanlist.length)
+	// 	var trackind = ctr
+	// 	var newBird = new Bird(mph[trackind], svg, audioContext, [], trackind)
+	// 	newBird.addTextPath()
+	// 	humanlist.push(newBird)
+	// 	ctr++
+	// }
+
+	document.getElementById("humanpaths").style.visibility = "visible"
+	var gtags = document.getElementsByTagName('g');
+	var len = gtags.length-1
+	var randnarray = []
+
+	while( randnarray.length < 5){
+		let newn = Math.floor(Math.random()*len)
+		if( randnarray.indexOf(newn) == -1 ){
+			randnarray.push(newn)
+			console.log(newn)
+			console.log(gtags.item(newn+1))
+			gtags.item(newn+1).style.visibility = "visible"
+		}
+	}
+
+	for(let i=1;i<12;i++){
+		if( randnarray.indexOf(i-1) == -1){
+			gtags.item(i).style.visibility = "hidden"
+		}
+
 	}
 
 	return humanlist;

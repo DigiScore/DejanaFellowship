@@ -84,9 +84,9 @@ document.getElementById("info").onclick = function() {
 
   var svg = document.getElementById("svgel")
 
-  while (svg.firstChild) {
-    svg.removeChild(svg.firstChild);
- }
+ //  while (svg.firstChild) {
+ //    svg.removeChild(svg.firstChild);
+ // }
 
 
   if( audioContext){
@@ -96,6 +96,7 @@ document.getElementById("info").onclick = function() {
 		gridlist = createRect(svg)
 		birdlist = createBirds(svg, audioContext, gridlist)
 
+		//creating performer
 		userpath = document.createElementNS('http://www.w3.org/2000/svg',"path"); 
 		userpath.setAttributeNS(null,"d","")
 		userpath.setAttributeNS(null, "stroke", "red"); 
@@ -701,3 +702,20 @@ function updatePitch( time ) {
 }
 
 document.getElementById("liveinput").addEventListener("click",toggleLiveInput)
+
+document.getElementById("pause").addEventListener("click",function(e){
+
+	if( rafID != null){
+		if (!window.cancelAnimationFrame)
+			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
+        window.cancelAnimationFrame( rafID );
+        this.innerText = "Play"
+        rafID = null
+
+	}
+	else{
+		this.innerText = "Pause"
+		rafID = window.requestAnimationFrame(updatePitch)
+	}
+
+})
