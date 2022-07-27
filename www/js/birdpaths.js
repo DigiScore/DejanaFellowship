@@ -23,7 +23,6 @@ var mpb = [
 	"M609,576c0,4.109,86.752,28,86.752,40c0,54.915,87.293,74.288,86.748,78c-8,54.5-169.723-70-167.5-70",
 	"M615,624c-51.238,1.43-192.5-12-209.5-72.5c-11.589-41.242,43.323-96.76,61-175c2.982-13.201-29.72-31.292-19.5-38.5c42.536-30,24.426-92.66,42.536-119",
 	"M670,85.5c13,6.5,0.726,20.922,2,31c0.721,5.699,10.34-5.071,10.5,1c0.397,15.036-6.027,30.739-6.5,48c-4,146-85.552,386-86,386",
-	"M584,231c65.5,4.5,70.635,28.669,99,51c12.915,10.167,36.285,22.099,48,38.5c5,7,20.225-12.948,25,16.5c3,18.5-24.319,32.237-28.5,57.5c-3.531,21.339-15.681,63.695-4.5,95c2.5,7-44.916,29.475-52.885,25.5c-45.115-22.5-53.17,0.625-61.615,3",
 	"M426.5,307.5c7-15,33-13.5,42-45c6.312-22.093,32.243-41.354,49.5-62c20.864-24.962,44.653-32.296,67-52.5c16.776-15.169,31.199,78.033,47,70c19.488-9.907,33-155,48-131c17.881,28.61,29.544,61.331,32,135c1.971,59.119,38,101.5,15.952,177.577C720.273,426.074,747.901,513.772,756,527",
 	"M276.5,0C325,48,157.747,78.481,165,122C179,206-0.594,246.162,4.5,276c10.5,61.5,396.592,40.734,399.459,78.666C406.636,390.078,360.5,391.5,358,426c-2.217,30.597-14.713,58.613-6.764,87.484c11.268,40.925,34.3,18.753,50.264,53.016c13.293,28.53-198.819,81.003-182,101.5c12.719,15.5-29.973,42.389-32,55c-4.146,25.794-2,34.5-10,42.5"	
 
@@ -38,19 +37,21 @@ var mph = [
 
 ]
 
+var compulsorypath = "M584,231c65.5,4.5,70.635,28.669,99,51c12.915,10.167,36.285,22.099,48,38.5c5,7,20.225-12.948,25,16.5c3,18.5-24.319,32.237-28.5,57.5c-3.531,21.339-15.681,63.695-4.5,95c2.5,7-44.916,29.475-52.885,25.5c-45.115-22.5-53.17,0.625-61.615,3"
+var compulsorytrack = "./sounds/mottwnh_memory3.mp3"
+
 var tracks = [
 	"./sounds/whole5.mp3",	
-	"./sounds/misch9.wav",	
+	"./sounds/whole1.mp3",	
 	"./sounds/whole5.mp3",	
-	"./sounds/misch9.wav",	
+	"./sounds/whole1.mp3",	
 	"./sounds/whole5.mp3",	
-	"./sounds/misch9.wav",	
+	"./sounds/whole1.mp3",	
 	"./sounds/whole5.mp3",	
-	"./sounds/misch9.wav",	
+	"./sounds/whole1.mp3",	
 	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
-	"./sounds/whole5.mp3",	
-	]
+	"./sounds/whole1.mp3",	
+ 	]
 
 class Bird {
   
@@ -123,7 +124,7 @@ class Bird {
   	return this.path.parentNode.remove(this.path)
   }
 
-  addSound(track){
+  addSound(track, loop){
 		
 	  var audioCtx = this.audioctx
 	  var request = new XMLHttpRequest();
@@ -142,11 +143,17 @@ class Bird {
 	  }
 	  request.send();
 
+  	this.source = this.audioctx.createBufferSource();
+	this.loop = loop
+
   }
 
   moveOnPath(){
-  	this.pathPointer = ( this.pathPointer + 1 )
-  	if( this.pathPointer < this.path.getTotalLength()){
+  	
+  	var totalLength = this.path.getTotalLength();
+  	this.pathPointer = ( this.pathPointer + 1 ) % totalLength;
+
+  	if( this.pathPointer < totalLength){
 		var start = this.path.getPointAtLength(this.pathPointer)
 		this.circle.setAttribute("cx",start.x)
 		this.circle.setAttribute("cy",start.y)
@@ -183,14 +190,15 @@ class Bird {
   }
 
   playSound(){
-  	console.log(this)
-	const source = this.audioctx.createBufferSource();
-	source.buffer = this.buffer
 
-	source.connect(this.audioctx.destination);
-	source.start();
+  	this.source = this.audioctx.createBufferSource();
+	this.source.loop = this.loop
+	this.source.buffer = this.buffer
+	this.source.connect(this.audioctx.destination);
+	this.source.start();
 
   }
+
 
 }
 
@@ -198,12 +206,17 @@ export function createBirds(svg, audioContext, gridlist){
 
 	var birdlist = []
 
+	var firstbird = new Bird(compulsorypath, svg, audioContext, gridlist, -1); //-1 as in its is the backing track
+	firstbird.addSound(compulsorytrack, false)
+	
+	birdlist.push(firstbird)
+
 	while(birdlist.length < 5){
 
 		console.log("Created path " + birdlist.length)
 		var trackind = Math.floor(Math.random()*mpb.length)
 		var newBird = new Bird(mpb[trackind], svg, audioContext, gridlist, trackind)
-		newBird.addSound(tracks[trackind])
+		newBird.addSound(tracks[trackind], true)
 		birdlist.push(newBird)
 	}
 
@@ -218,8 +231,14 @@ export function createBirds(svg, audioContext, gridlist){
 
 	document.getElementById("info").style.visibility = "hidden"
 	document.getElementById("liveinput").style.visibility = "visible"
+	document.getElementById("pause").innerText = "Pause"
 	document.getElementById("pause").style.visibility = "visible"
 
+	birdlist[0].source.onended = function(event){
+		for(var b=1; b<birdlist.length; b++){
+			birdlist[b].source.stop()
+		}
+	}
 
 	return birdlist;
 

@@ -231,6 +231,7 @@ function draw(path, circle){
 function gotStream(stream) {
 
     // Create an AudioNode from the stream.
+
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
 
     meter = createAudioMeter(audioContext);
@@ -326,28 +327,34 @@ function toggleOscillator() {
 }
 
 function toggleLiveInput() {
-    if (isPlaying) {
-        //stop playing and return
-        sourceNode.stop( 0 );
-        sourceNode = null;
-        analyser = null;
-        isPlaying = false;
-        if (!window.cancelAnimationFrame)
-			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
-        window.cancelAnimationFrame( rafID );
-    }
-    getUserMedia(
-    	{
-            "audio": {
-                "mandatory": {
-                    "googEchoCancellation": "false",
-                    "googAutoGainControl": "false",
-                    "googNoiseSuppression": "false",
-                    "googHighpassFilter": "false"
-                },
-                "optional": []
-            },
-        }, gotStream);
+
+	if (rafID == null){
+	
+	    if (isPlaying) {
+	        //stop playing and return
+	        sourceNode.stop( 0 );
+	        sourceNode = null;
+	        analyser = null;
+	        isPlaying = false;
+	        if (!window.cancelAnimationFrame)
+				window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
+	        window.cancelAnimationFrame( rafID );
+	    }
+	    getUserMedia(
+	    	{
+	            "audio": {
+	                "mandatory": {
+	                    "googEchoCancellation": "false",
+	                    "googAutoGainControl": "false",
+	                    "googNoiseSuppression": "false",
+	                    "googHighpassFilter": "false"
+	                },
+	                "optional": []
+	            },
+	        }, gotStream);
+	}
+
+
 }
 
 function togglePlayback() {
@@ -705,16 +712,24 @@ document.getElementById("liveinput").addEventListener("click",toggleLiveInput)
 
 document.getElementById("pause").addEventListener("click",function(e){
 
-	if( rafID != null){
+	if( rafID != null || this.innerText == "Pause"){
 		if (!window.cancelAnimationFrame)
 			window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
         window.cancelAnimationFrame( rafID );
         this.innerText = "Play"
+
+        //Dirty hack
+		for(var b=0; b<birdlist.length; b++){
+			birdlist[b].source.stop()
+		}
         rafID = null
 
 	}
 	else{
 		this.innerText = "Pause"
+		for(var b=0; b<birdlist.length; b++){
+			birdlist[b].playSound()
+		}
 		rafID = window.requestAnimationFrame(updatePitch)
 	}
 
