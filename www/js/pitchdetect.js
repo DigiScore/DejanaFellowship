@@ -281,7 +281,7 @@ function gotStream(stream) {
 			birdlist[i].playSound(birdlist, rafID, 1)			
 		}
 
-		humanlist[0].playSound(birdlist, rafId, 1)
+		humanlist[0].playSound(birdlist, rafID, 1)
 	}
 
 }

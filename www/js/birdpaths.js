@@ -125,6 +125,7 @@ class Bird {
   }
 
   removeBird(){
+  	this.circle.parentNode.remove(this.circle)
   	return this.path.parentNode.remove(this.path)
   }
 
@@ -277,7 +278,9 @@ export function humanpaths(svg, audioContext){
 	// }
 
 	for(let i=0; i<5;i++){
-		humanlist.push(new Bird("M0,0c0,0", svg, audioContext, [], trackind))
+		var hp = new Bird("M0,0", svg, audioContext, [], 20+i)
+		hp.circle.setAttribute("fill","#ffffff")
+		humanlist.push(hp)
 	}
 
 	document.getElementById("humanpaths").style.visibility = "visible"
