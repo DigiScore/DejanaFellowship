@@ -38,7 +38,7 @@ var mph = [
 ]
 
 var compulsorypath = "M584,231c65.5,4.5,70.635,28.669,99,51c12.915,10.167,36.285,22.099,48,38.5c5,7,20.225-12.948,25,16.5c3,18.5-24.319,32.237-28.5,57.5c-3.531,21.339-15.681,63.695-4.5,95c2.5,7-44.916,29.475-52.885,25.5c-45.115-22.5-53.17,0.625-61.615,3"
-var compulsorytrack = "./sounds/mottwnh_memory3.mp3"
+var compulsorytrack = "./sounds/mottwnh_memory1.mp3"
 
 var tracks = [
 	"./sounds/whole5.mp3",	
