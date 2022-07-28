@@ -299,7 +299,7 @@ function togglePlay(){
 	    // sourceNode.buffer = isound;
 	    // sourceNode.connect(audioContext.destination)
 	    // sourceNode.start(0)
-	    audioElement.volume = 0;
+	    //audioElement.volume = 0;
      	audioElement.play();
    	}
 
@@ -727,6 +727,7 @@ function updatePitch( time ) {
 function endpiece(){
 
 		let userpath = document.getElementById("userpath")
+		userpath.setAttributeNS(null, "d", "");
 		if( userpath ){
 			userpath.parentNode.remove(userpath)
 		}
