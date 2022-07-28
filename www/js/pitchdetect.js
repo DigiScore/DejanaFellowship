@@ -713,10 +713,7 @@ function updatePitch( time ) {
 		}
         window.cancelAnimationFrame( rafID );
         rafID = null
-        if( userpath ){
-			userpath.parentNode.remove(userpath)
-		}
-		endpiece()
+        endpiece()
 
 	}
 	else{
@@ -729,7 +726,7 @@ function updatePitch( time ) {
 
 function endpiece(){
 
-		let userpath = document.getElementById("userpath")
+		let userpath = document.getElementById("user")
 		//userpath.setAttributeNS(null, "d", "");
 		if( userpath ){
 			userpath.parentNode.remove(userpath)
