@@ -191,13 +191,16 @@ class Bird {
   	this.nextPoint = now + this.timeperpoint
   }
 
-  playSound(birdlist, rafID){
+  playSound(birdlist, rafID, gain){
 
   	this.source = this.audioctx.createBufferSource();
   	console.log(this.loop)
 	this.source.loop = this.loop
 	this.source.buffer = this.buffer
-	this.source.connect(this.audioctx.destination);
+	this.gainNode = this.audioctx.createGain()
+	this.gainNode.gain.value = gain
+	this.source.connect(this.gainNode);
+	this.gainNode.connect(this.audioctx.destination)
 
 	let that  = this
 
