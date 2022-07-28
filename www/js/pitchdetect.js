@@ -277,14 +277,7 @@ function gotStream(stream) {
 		updatePitch();		
 
 		for( var i=0;i<birdlist.length;i++){
-
-			if( i ==0 ){
-				birdlist[i].playSound(birdlist, rafID, 1)	
-			}
-			else{
-				birdlist[i].playSound(birdlist, rafID, 0)
-			}
-			
+			birdlist[i].playSound(birdlist, rafID, 1)			
 		}
 	}
 
@@ -769,13 +762,7 @@ document.getElementById("pause").addEventListener("click",function(e){
 	else{
 		this.innerText = "Pause"
 		for(var b=0; b<birdlist.length; b++){
-			if( b ==0 ){
-				birdlist[b].playSound(birdlist, rafID, 1)
-			}
-			else{
-				birdlist[b].playSound(birdlist, rafID, 0)	
-			}
-			
+			birdlist[b].playSound(birdlist, rafID, 1)			
 		}
 		rafID = window.requestAnimationFrame(updatePitch)
 	}
