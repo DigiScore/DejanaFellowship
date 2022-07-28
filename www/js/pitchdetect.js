@@ -274,11 +274,14 @@ function gotStream(stream) {
 	}
 
 	if( allLoaded!=null){
+
 		updatePitch();		
 
 		for( var i=0;i<birdlist.length;i++){
 			birdlist[i].playSound(birdlist, rafID, 1)			
 		}
+
+		humanlist[0].playSound(birdlist, rafId, 1)
 	}
 
 }
