@@ -713,6 +713,10 @@ function updatePitch( time ) {
 		}
         window.cancelAnimationFrame( rafID );
         rafID = null
+        if( userpath ){
+				// userpath.parentNode.remove(userpath)
+				userpath.setAttributeNS(null, "d", "");
+		}
         endpiece()
 
 	}
@@ -726,11 +730,11 @@ function updatePitch( time ) {
 
 function endpiece(){
 
-		let userpath = document.getElementById("user")
-		//userpath.setAttributeNS(null, "d", "");
-		if( userpath ){
-			userpath.parentNode.remove(userpath)
-		}
+		// let userpath = document.getElementById("user")
+		// //userpath.setAttributeNS(null, "d", "");
+		// if( userpath ){
+		// 	userpath.parentNode.remove(userpath)
+		// }
 
 		for(let g=0; g<gridlist.length; g++){
 			//that.gridlist[g].setAttribute("fill-opacity",1)
